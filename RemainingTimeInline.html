@@ -2,6 +2,36 @@
 <html>
 <head>
   <script>
+    var timeoutInfos = []
+    
+    function clearOldTimeout() {
+        var newTimeoutInfos = []
+        timeoutInfos.forEach(function(timeoutInfo) {
+            var timeoutID = timeoutInfo[0]
+            var min = timeoutInfo[1]
+            var startDateTime = timeoutInfo[2]
+            var startTime = (new Date(startDateTime)).getTime()
+            var now = new Date()
+            var nowTime = now.getTime()
+            if (startTime - min*60*1000 <= nowTime) {
+                clearTimeout(timeoutID)
+            } else {
+                newTimeoutInfos.push(timeoutInfo)
+            }
+        })
+        timeoutInfos = newTimeoutInfos
+    }
+
+    function printAllTimeout() {
+        console.log("*** LIVE ALARMs ***")
+        timeoutInfos.forEach(function(timeoutInfo) {
+            var timeoutID = timeoutInfo[0]
+            var min = timeoutInfo[1]
+            var startDateTime = timeoutInfo[2]
+            console.log("    " + min + " min. ALARM for " + startDateTime + " timeoutID=" + timeoutID)
+        })
+    }
+    
     function d2(x) { return (x < 10) ? '0' + x : x }
 
     function showTime(startDateTime, id)
@@ -28,16 +58,17 @@
         var nowTime = now.getTime()
 
         var remMiliSec = (startTime - nowTime)
-        for (let i in minList) {
-            var min = minList[i]
+        minList.forEach(function(min) {
             var timerMiliSec = remMiliSec - min*60*1000
             if (timerMiliSec > 0) {
-                setTimeout(function(min) {
+                var timeoutID = setTimeout(function(min) {
                     alert("It's " + (new Date()).toLocaleTimeString('en-GB') + " now! (" + min + "min.  before " + startDateTime + ")")
+                    clearOldTimeout()
                 }, timerMiliSec, min)
-                console.log("Set " + min + " min. ALARM for " + startDateTime)
+                timeoutInfos.push([timeoutID, min, startDateTime])
+                console.log("Set " + min + " min. ALARM for " + startDateTime + " timeoutID=" + timeoutID)
             }
-        }
+        })
     }
 
     function watchTime(startDateTime, id, minList)
@@ -49,10 +80,10 @@
 	        setInterval(showTime, 1000, startDateTime, id)
         }, waitMiliSec)
     }
-  watchTime("2017-11-11T09:30:10", "time1", [1, 5, 15])
-  watchTime("2017-11-11T14:26:00", "time2", [1, 5, 15])
-  watchTime("2017-11-11T20:08:00", "time3", [1, 2, 3, 4, 5, 15])
-  watchTime("2017-11-11T20:08:30", "time4", [1, 2, 3, 4, 5, 15])
+  watchTime("2017-11-12T00:00:10", "time1", [1, 3, 5])
+  watchTime("2017-11-12T01:15:00", "time2", [1, 2, 3, 4, 5])
+  watchTime("2017-11-12T05:20:00", "time3", [1, 5, 15])
+  watchTime("2017-11-12T08:08:30", "time4", [1, 5, 15])
   </script>
 </head>
 

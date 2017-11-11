@@ -1,3 +1,33 @@
+var timeoutInfos = []
+
+function clearOldTimeout() {
+    var newTimeoutInfos = []
+    timeoutInfos.forEach(function(timeoutInfo) {
+        var timeoutID = timeoutInfo[0]
+        var min = timeoutInfo[1]
+        var startDateTime = timeoutInfo[2]
+        var startTime = (new Date(startDateTime)).getTime()
+        var now = new Date()
+        var nowTime = now.getTime()
+        if (startTime - min*60*1000 <= nowTime) {
+            clearTimeout(timeoutID)
+        } else {
+            newTimeoutInfos.push(timeoutInfo)
+        }
+    })
+    timeoutInfos = newTimeoutInfos
+}
+
+function printAllTimeout() {
+    console.log("*** LIVE ALARMs ***")
+    timeoutInfos.forEach(function(timeoutInfo) {
+        var timeoutID = timeoutInfo[0]
+        var min = timeoutInfo[1]
+        var startDateTime = timeoutInfo[2]
+        console.log("    " + min + " min. ALARM for " + startDateTime + " timeoutID=" + timeoutID)
+    })
+}
+
 function d2(x) { return (x < 10) ? '0' + x : x }
 
 function showTime(startDateTime, id)
@@ -24,16 +54,17 @@ function setAlertTimers(startDateTime, minList)
     var nowTime = now.getTime()
 
     var remMiliSec = (startTime - nowTime)
-    for (let i in minList) {
-        var min = minList[i]
+    minList.forEach(function(min) {
         var timerMiliSec = remMiliSec - min*60*1000
         if (timerMiliSec > 0) {
-            setTimeout(function(min) {
+            var timeoutID = setTimeout(function(min) {
                 alert("It's " + (new Date()).toLocaleTimeString('en-GB') + " now! (" + min + "min.  before " + startDateTime + ")")
+                clearOldTimeout()
             }, timerMiliSec, min)
-            console.log("Set " + min + " min. ALARM for " + startDateTime)
+            timeoutInfos.push([timeoutID, min, startDateTime])
+            console.log("Set " + min + " min. ALARM for " + startDateTime + " timeoutID=" + timeoutID)
         }
-    }
+    })
 }
 
 function watchTime(startDateTime, id, minList)
