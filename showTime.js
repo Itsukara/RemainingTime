@@ -6,8 +6,8 @@ function showTime(startDateTime, id)
     var now = new Date()
     var nowTime = now.getTime()
     var nowHHMMSS = now.toLocaleTimeString('en-GB')
-
-    var remSec = Math.floor((startTime - nowTime)/1000)
+    // console.log(nowTime)
+    var remSec = Math.ceil((startTime - nowTime)/1000)
     var sign = remSec < 0 ? " - " : " + "
     remSec = remSec < 0 ? - remSec : remSec
     var ss = remSec % 60
@@ -28,16 +28,20 @@ function setAlertTimers(startDateTime, minList)
         var min = minList[i]
         var timerMiliSec = remMiliSec - min*60*1000
         if (timerMiliSec > 0) {
-            setTimeout(function() {
+            setTimeout(function(min) {
                 alert("It's " + (new Date()).toLocaleTimeString('en-GB') + " now! (" + min + "min.  before " + startDateTime + ")")
-            }, timerMiliSec)
+            }, timerMiliSec, min)
             console.log("Set " + min + " min. ALARM for " + startDateTime)
         }
     }
 }
 
-function watchTime(startDateTime, id)
+function watchTime(startDateTime, id, minList)
 {
-    setAlertTimers(startDateTime, [5, 15])
-    setInterval(showTime, 1000, startDateTime, id)
+    setAlertTimers(startDateTime, minList)
+    var waitMiliSec = 1000 - Date.now() % 1000 + 100 // start HH:MM:SS.10
+    // console.log(waitMiliSec)
+    setTimeout(function() {
+        setInterval(showTime, 1000, startDateTime, id)
+    }, waitMiliSec)
 }
