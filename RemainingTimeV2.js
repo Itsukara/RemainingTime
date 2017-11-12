@@ -9,13 +9,16 @@ function clearOldTimeout() {
         var startTime = (new Date(startDateTime)).getTime()
         var now = new Date()
         var nowTime = now.getTime()
-        if (startTime - min*60*1000 <= nowTime) {
+        if (startTime - min*60*1000 <= nowTime + 100) {
             clearTimeout(timeoutID)
+            var cancelNode = timeoutInfo[3]
+            cancelNode.parentNode.removeChild(cancelNode)
         } else {
             newTimeoutInfos.push(timeoutInfo)
         }
     })
     timeoutInfos = newTimeoutInfos
+    printAllTimeout()
 }
 
 function printAllTimeout() {
@@ -49,9 +52,7 @@ function showTime(startDateTime, id)
 
 function cancelAlertTimer(timeoutID, cancelNode)
 {
-    // console.log(timeoutID)
     clearTimeout(timeoutID)
-    // console.log(cancelNode)
     cancelNode.parentNode.removeChild(cancelNode)
     timeoutInfos = timeoutInfos.filter(function(n) {return n[0] != timeoutID})
     printAllTimeout()
@@ -69,22 +70,19 @@ function setAlertTimer(startDateTime, waitminName)
     var remMiliSec = (startTime - nowTime)
     var timerMiliSec = remMiliSec - min*60*1000
     if (timerMiliSec > 0) {
-        var cancelNode = document.createElement('span')
-        // console.log(cancelNode)
-        var spanNode = waitminNode.parentNode
-        spanNode.parentNode.insertBefore(cancelNode, spanNode.nextSibling)
+        var dummyNode = document.createElement('span')
+        dummyNode.innerHTML = '<button type="button">' + min + '</button>'
+        var cancelNode = dummyNode.firstElementChild;
+        waitminNode.parentNode.parentNode.lastChild.appendChild(cancelNode)
 
         var timeoutID = setTimeout(function(min) {
             alert("It's " + (new Date()).toLocaleTimeString('en-GB') + " now! (" + min + "min.  before " + startDateTime + ")")
-            cancelAlertTimer(timeoutID, cancelNode)
             clearOldTimeout()
         }, timerMiliSec, min)
 
-        var cancelInnerHTML = '  <button type="button" onclick="cancelAlertTimer(timeoutID, this)">MIN</button>'
-        cancelInnerHTML = cancelInnerHTML.replace("timeoutID", timeoutID).replace("MIN", min)
-        cancelNode.innerHTML = cancelInnerHTML
+        cancelNode.setAttribute('onclick', 'cancelAlertTimer(' + timeoutID + ', this)');
 
-        timeoutInfos.push([timeoutID, min, startDateTime])
+        timeoutInfos.push([timeoutID, min, startDateTime, cancelNode])
         printAllTimeout()
         // console.log("Set " + min + " min. ALARM for " + startDateTime + " timeoutID=" + timeoutID)
         
@@ -95,20 +93,19 @@ function setAlertTimer(startDateTime, waitminName)
 
 function watchTime(startDateTime, id)
 {
+    // make remaining time GUI
     var waitMiliSec = 1000 - Date.now() % 1000 + 100 // start HH:MM:SS.10
-    // console.log(waitMiliSec)
     setTimeout(function() {
         setInterval(showTime, 1000, startDateTime, id)
     }, waitMiliSec)
 
+    // make timer GUI
     var waitminName = "waitmin_" + id
-    var timerInnerHTML = '   Timers(min.) <button type="button" onclick="setAlertTimer(\'startDateTime\', \'waitmin\')">Set</button> <input type="text" id="waitmin" value=15 size=3> Cancel:'
+    var timerInnerHTML = '  <span class="setTimer"><button type="button" onclick="setAlertTimer(\'startDateTime\', \'waitmin\')">Set:</button><input type="text" id="waitmin" value=15 size=1></span>' +
+                         '  <span class="cancelTimer">Cancel:</span>'
     timerInnerHTML = timerInnerHTML.replace("startDateTime", startDateTime).replace(/waitmin/g, waitminName)
     var timerNode = document.createElement('span');
     timerNode.innerHTML = timerInnerHTML
-    // console.log(timerNode)
     var spanNode = document.getElementById(id)
-    var parentNode = spanNode.parentNode
-    parentNode.insertBefore(timerNode, spanNode.nextSibling)
+    spanNode.parentNode.insertBefore(timerNode, spanNode.nextSibling)
 }
-

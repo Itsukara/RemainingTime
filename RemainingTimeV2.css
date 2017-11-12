@@ -1,0 +1,8 @@
+.setTimer {
+    padding: 2pt;
+    background-color: lightblue;
+}
+.cancelTimer {
+    padding: 2pt;
+    background-color: lightpink;
+}
