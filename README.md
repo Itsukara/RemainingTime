@@ -5,7 +5,7 @@ Javascript to show Remaining time in real time and set Timers for each &lt;SPAN 
 # RemainingTimeV2
 In V2, timers can be set and canceled by GUI. See, following for GUI demo.
 
-[![](http://img.youtube.com/vi/wGtMrpAIlhQ/0.jpg)](https://www.youtube.com/watch?v=wGtMrpAIlhQ)
+[![](http://img.youtube.com/vi/XtNym7a4QL0/0.jpg)](https://www.youtube.com/watch?v=XtNym7a4QL0)
 
 # Old examples
 
