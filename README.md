@@ -2,6 +2,13 @@
 Javascript to show Remaining time in real time and set Timers for each &lt;SPAN id="foo"&gt;&lt;/SPAN&gt;
 
 
+# RemainingTimeV2
+In V2, timers can be set and canceled by GUI. See, following for GUI demo.
+
+[![](http://img.youtube.com/vi/wGtMrpAIlhQ/0.jpg)](https://www.youtube.com/watch?v=wGtMrpAIlhQ)
+
+# Old examples
+
 ## Example with console log of IE developer tools
 
 ![screenshot01](https://user-images.githubusercontent.com/17507064/32689012-e13e8d92-c71e-11e7-8292-795342b395b0.PNG)
